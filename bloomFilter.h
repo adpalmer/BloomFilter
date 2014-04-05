@@ -25,7 +25,7 @@ public:
   BloomFilter<T>& operator=(const BloomFilter &rhs);
 
   // return true if full, false if not
-  bool full() { return elements == bitVectorSize; }
+  bool full() { return elements == capacity; }
 
   // add element to bloom filter given data and sizeof(data);
   // return true if inserted, false if full
@@ -151,6 +151,8 @@ bool BloomFilter<T>::add(T &data, int byteCnt) {
   if(full()) {
     return false;
   }
+
+  elements++;
 
   for(auto i : hashSeeds) {
     hashVal = murmur3_32(&data, byteCnt, i) % bitVectorSize;
