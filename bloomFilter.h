@@ -1,6 +1,14 @@
 #ifndef _BLOOM_FILTER_
 #define _BLOOM_FILTER_
 
+/*
+ * Note: Currently does not support union or intersection because following an
+ *       intersection/union the size can only be approximated.
+ *       Potential options include leaving them out, using the approximate size
+ *       or removing size restriction on add if a BloomFilter is the result
+ *       of a union or intersection.
+ */
+
 #include <cmath>
 #include <utility>
 #include <list>
