@@ -18,7 +18,7 @@ template <class T>
 class BloomFilter {
 private:
   unsigned char *bitVector;
-  int elements; // number of elements inserted
+  unsigned int insertedCnt; // number of elements inserted
   unsigned int capacity; // total number of elements possible
   double errorRate; // user specified error rate
   unsigned int bitVectorSize; // size of data array
@@ -33,7 +33,7 @@ public:
   BloomFilter<T>& operator=(const BloomFilter &rhs);
 
   // return true if full, false if not
-  bool full() { return elements == capacity; }
+  bool full() { return insertedCnt == capacity; }
 
   // add element to bloom filter given data and sizeof(data);
   // return true if inserted, false if full
@@ -53,7 +53,7 @@ public:
 
 // Constructor
 template <class T>
-BloomFilter<T>::BloomFilter(unsigned int capacity, double errorRate) : elements{0}, capacity{capacity}, errorRate{errorRate} {
+BloomFilter<T>::BloomFilter(unsigned int capacity, double errorRate) : insertedCnt{0}, capacity{capacity}, errorRate{errorRate} {
   // calculate number of bits that will give desired error rate with desired capacity
   bitVectorSize = (unsigned int)ceil((capacity*-log(errorRate))/(log(2)*log(2)));
   
@@ -78,15 +78,15 @@ BloomFilter<T>::BloomFilter(unsigned int capacity, double errorRate) : elements{
 
 // Move Constructor
 template <class T>
-BloomFilter<T>::BloomFilter(BloomFilter &&rhs): bitVector{rhs.bitVector}, elements{rhs.elements}, capacity{rhs.capacity}, errorRate{rhs.errorRate}, bitVectorSize{rhs.bitVectorSize} {
+BloomFilter<T>::BloomFilter(BloomFilter &&rhs): bitVector{rhs.bitVector}, insertedCnt{rhs.insertedCnt}, capacity{rhs.capacity}, errorRate{rhs.errorRate}, bitVectorSize{rhs.bitVectorSize} {
   hashSeeds = std::move(rhs.hashSeeds);
   rhs.bitVector = nullptr;
-  elements = capacity = errorRate = bitVectorSize = 0;
+  insertedCnt = capacity = errorRate = bitVectorSize = 0;
 }
 
 // Copy Constructor
 template <class T>
-BloomFilter<T>::BloomFilter(const BloomFilter &rhs): elements{rhs.elements}, capacity{rhs.capacity}, errorRate{rhs.errorRate}, bitVectorSize{rhs.bitVectorSize}, hashSeeds{rhs.hashSeeds} {
+BloomFilter<T>::BloomFilter(const BloomFilter &rhs): insertedCnt{rhs.insertedCnt}, capacity{rhs.capacity}, errorRate{rhs.errorRate}, bitVectorSize{rhs.bitVectorSize}, hashSeeds{rhs.hashSeeds} {
   bitVector = new char[bitVectorSize];
   for(int i=0; i<bitVectorSize; i++) {
     bitVector[i] = rhs.bitVector[i];
@@ -99,12 +99,12 @@ BloomFilter<T>& BloomFilter<T>::operator=(BloomFilter &&rhs) {
   if(*this != rhs) {
     hashSeeds = std::move(rhs.hashSeeds);
     bitVector = rhs.bitVector;
-    elements = rhs.elements;
+    insertedCnt = rhs.insertedCnt;
     capacity = rhs.capacity;
     errorRate = rhs.errorRate;
     bitVectorSize = rhs.bitVectorSize;
     rhs.bitVector = nullptr;
-    rhs.elements = rhs.capacity = rhs.errorRate = rhs.bitVectorSize = 0;
+    rhs.insertedCnt = rhs.capacity = rhs.errorRate = rhs.bitVectorSize = 0;
   }
   return *this;
 }
@@ -128,7 +128,7 @@ BloomFilter<T>& BloomFilter<T>::operator=(const BloomFilter &rhs) {
       bitVector[i] = rhs.bitVector[i];
     }
     hashSeeds = rhs.hashSeeds;
-    elements = rhs.elements;
+    insertedCnt = rhs.insertedCnt;
     capacity = rhs.capacity;
     errorRate = rhs.errorRate;
     bitVectorSize = rhs.bitVectorSize;
@@ -160,7 +160,7 @@ bool BloomFilter<T>::insert(T &data, int byteCnt) {
     return false;
   }
 
-  elements++;
+  insertedCnt++;
 
   for(auto i : hashSeeds) {
     hashVal = murmur3_32(&data, byteCnt, i) % bitVectorSize;
