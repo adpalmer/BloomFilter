@@ -5,7 +5,7 @@
  * Note: Currently does not support union or intersection because following an
  *       intersection/union the size can only be approximated.
  *       Potential options include leaving them out, using the approximate size
- *       or removing size restriction on add if a BloomFilter is the result
+ *       or removing size restriction on insert if a BloomFilter is the result
  *       of a union or intersection.
  */
 
@@ -37,11 +37,11 @@ public:
 
   // add element to bloom filter given data and sizeof(data);
   // return true if inserted, false if full
-  bool add(T &data);
+  bool insert(T &data);
 
   // add element to bloom filter given data of type T and a byteCnt
   // return true if inserted, false if full
-  bool add(T &data, int byteCnt);
+  bool insert(T &data, int byteCnt);
   
   // checks for existence given data of type T and sizeof(data)
   bool exists(T &data);
@@ -146,14 +146,14 @@ BloomFilter<T>::~BloomFilter() {
 // add element to bloom filter given data and sizeof(data);
 // return true if inserted, false if full
 template <class T>
-bool BloomFilter<T>::add(T &data) {
-  return add(data, sizeof(data));
+bool BloomFilter<T>::insert(T &data) {
+  return insert(data, sizeof(data));
 }
 
 // add element to bloom filter given data of type T and a byteCnt
 // return true if inserted, false if full
 template <class T>
-bool BloomFilter<T>::add(T &data, int byteCnt) {
+bool BloomFilter<T>::insert(T &data, int byteCnt) {
   unsigned int hashVal, dataIdx, bitIdx;
   
   if(full()) {

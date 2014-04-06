@@ -7,18 +7,21 @@ int main() {
   std::string test1 = "2TESTING1";
   std::string test2 = "TESTING2";
   
-  bloomFilter.add(test1, test1.length());
+  bloomFilter.insert(test1, test1.length());
   std::cout << "Exists: " << bloomFilter.exists(test1, test1.length()) << std::endl;
   std::cout << "Shouldn't Exist: " << bloomFilter.exists(test2, test2.length()) << std::endl;
+
   
-  bloomFilter.add(test2, test2.length());
+  bloomFilter.insert(test2, test2.length());
   std::cout << "Exists: " << bloomFilter.exists(test2, test2.length()) << std::endl;
   
 
   BloomFilter<std::string> bf2(1, 0.001);
-  bf2.add(test1, test1.length());
-  std::cout << "Should return false since full: " << bf2.add(test2, test2.length()) << std::endl;;
+  bf2.insert(test1, test1.length());
+  std::cout << "Should return false since full: " << bf2.insert(test2, test2.length()) << std::endl;;
 
   std::cout << "Full?: " << bf2.full() << std::endl;
+
+  
   
 }
