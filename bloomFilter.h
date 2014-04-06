@@ -35,6 +35,9 @@ public:
   // return true if full, false if not
   bool full() { return insertedCnt == capacity; }
 
+  // return number of elements inserted
+  unsigned int insertedCount() { return insertedCnt; }
+
   // add element to bloom filter given data and sizeof(data);
   // return true if inserted, false if full
   bool insert(T &data);

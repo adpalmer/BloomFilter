@@ -14,6 +14,7 @@ int main() {
   
   bloomFilter.insert(test2, test2.length());
   std::cout << "Exists: " << bloomFilter.exists(test2, test2.length()) << std::endl;
+  std::cout << "Elements inserted into bloomFilter: " << bloomFilter.insertedCount() << std::endl;
   
 
   BloomFilter<std::string> bf2(1, 0.001);
