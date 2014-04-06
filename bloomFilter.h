@@ -38,6 +38,9 @@ public:
   // return number of elements inserted
   unsigned int insertedCount() { return insertedCnt; }
 
+  // clear bitVector
+  void clear();
+
   // add element to bloom filter given data and sizeof(data);
   // return true if inserted, false if full
   bool insert(T &data);
@@ -199,6 +202,16 @@ bool BloomFilter<T>::exists(T &data, int byteCnt) {
   }
   
   return true;
+}
+
+// clear data vector
+template <class T>
+void BloomFilter<T>::clear() {
+  insertedCnt = 0;
+  int size = bitVectorSize/8;
+  for(int i=0; i<size; i++) {
+    bitVector[i] = (char)0;
+  }
 }
 
 #endif
