@@ -93,8 +93,10 @@ BloomFilter<T>::BloomFilter(BloomFilter &&rhs): bitVector{rhs.bitVector}, insert
 // Copy Constructor
 template <class T>
 BloomFilter<T>::BloomFilter(const BloomFilter &rhs): insertedCnt{rhs.insertedCnt}, capacity{rhs.capacity}, errorRate{rhs.errorRate}, bitVectorSize{rhs.bitVectorSize}, hashSeeds{rhs.hashSeeds} {
-  bitVector = new char[bitVectorSize];
-  for(int i=0; i<bitVectorSize; i++) {
+  unsigned int bitVectorBytes = rhs.bitVectorSize/8;
+  bitVector = new unsigned char[bitVectorBytes];
+
+  for(int i=0; i<bitVectorBytes; i++) {
     bitVector[i] = rhs.bitVector[i];
   }
 }
@@ -102,7 +104,7 @@ BloomFilter<T>::BloomFilter(const BloomFilter &rhs): insertedCnt{rhs.insertedCnt
 // move = operator
 template <class T>
 BloomFilter<T>& BloomFilter<T>::operator=(BloomFilter &&rhs) {
-  if(*this != rhs) {
+  if(this != &rhs) {
     hashSeeds = std::move(rhs.hashSeeds);
     bitVector = rhs.bitVector;
     insertedCnt = rhs.insertedCnt;
@@ -118,19 +120,22 @@ BloomFilter<T>& BloomFilter<T>::operator=(BloomFilter &&rhs) {
 // copy = operator
 template <class T>
 BloomFilter<T>& BloomFilter<T>::operator=(const BloomFilter &rhs) {
-  if(*this != rhs) {
+  if(this != &rhs) {
     // delete if data is not null and bitVectorSizes aren't equal
+    unsigned int bitVectorBytes = rhs.bitVectorSize/8;
+    
     if(bitVector != nullptr && bitVectorSize != rhs.bitVectorSize) {
       delete []bitVector;
+      bitVector = nullptr;
     }
     
     // allocate memory if data is null
     if(bitVector == nullptr) {
-      bitVector = new char[bitVectorSize];
+      bitVector = new unsigned char[bitVectorBytes];
     }
     
     // copy all data to lhs
-    for(int i=0; i<bitVectorSize; i++) {
+    for(int i=0; i<bitVectorBytes; i++) {
       bitVector[i] = rhs.bitVector[i];
     }
     hashSeeds = rhs.hashSeeds;
@@ -139,6 +144,7 @@ BloomFilter<T>& BloomFilter<T>::operator=(const BloomFilter &rhs) {
     errorRate = rhs.errorRate;
     bitVectorSize = rhs.bitVectorSize;
   }
+
   return *this;
 }
 
